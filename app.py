@@ -43,7 +43,7 @@ for i in range (0,3):
         "source":total_name[i]
          }
          )
-def trouve_chunk_pertinent(question,source_filtre=None):
+def trouve_chunk_pertinent(question,source_filtre=None,top_n=10):
 
     if source_filtre:
         total_chunks_filtre=[c for c in total_chunks if source_filtre==c['source']]
@@ -54,7 +54,7 @@ def trouve_chunk_pertinent(question,source_filtre=None):
     embedding_chunk = model.encode(text_chunk)
     embedding_question= model.encode(question)
     similarite=util.cos_sim(embedding_question, embedding_chunk)[0]
-    indices = similarite.argsort(descending=True)
+    indices = similarite.argsort(descending=True)[:top_n]
     meuilleur = [total_chunks[i] for i in indices ]
 
     return meuilleur
@@ -71,10 +71,10 @@ for message in st.session_state.messages:
 
     if message['role']!='system':
         with st.chat_message(message['role']):
-            st.write(message['content'])
+            st.markdown(message['content'])
 
 document_choisi= st.selectbox("choisir ce que tu veux qu'on discute sur",
-                              ["AFRINAI", "Vocabulaire_AI_Engineer_FR_EN_Kirundi", "cours-ITN2026"])
+                              ["AFRINAI", "Vocabulaire_AI_Engineer_FR_EN_Kirundi", "cours-ITN2026",None])
 
 texte= st.chat_input()
 
